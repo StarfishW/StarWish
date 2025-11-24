@@ -1,0 +1,38 @@
+import { Language } from './types';
+
+export const TRANSLATIONS = {
+  en: {
+    appTitle: "StarWish",
+    appSubtitle: "Release your lantern into the digital galaxy. Listen to the whispers of the stars.",
+    cta: "Make a Wish",
+    placeholder: "What do you desire? (e.g., Peace of mind, a new adventure...)",
+    cancel: "Cancel",
+    send: "Release Lantern",
+    sending: "Sending...",
+    wishLabel: "The Wish",
+    wisdomLabel: "Star Wisdom",
+    timeLabel: "Recorded at",
+    errorApiKey: "The stars are silent today (Missing API Key).",
+    defaultBlessing: "The stars twinkle in acknowledgement.",
+    charCount: "{current}/{max}",
+    like: "Like",
+    liked: "Liked",
+  },
+  zh: {
+    appTitle: "星愿",
+    appSubtitle: "放飞数字孔明灯，倾听来自星空的祝福。",
+    cta: "我要许愿",
+    placeholder: "写下你的心愿... (例如：家人安康，事业有成...)",
+    cancel: "取消",
+    send: "放飞愿望",
+    sending: "祈福中...",
+    wishLabel: "心愿",
+    wisdomLabel: "星语",
+    timeLabel: "记录于",
+    errorApiKey: "星空此刻静默（缺少 API Key）。",
+    defaultBlessing: "群星闪烁，以此致意。",
+    charCount: "{current}/{max}",
+    like: "点赞",
+    liked: "已赞",
+  }
+};
