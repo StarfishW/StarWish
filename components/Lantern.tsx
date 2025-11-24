@@ -1,3 +1,4 @@
+
 import React from 'react';
 import { Wish } from '../types';
 import { HeartIcon } from './Icons';
@@ -9,87 +10,119 @@ interface LanternProps {
 
 const Lantern: React.FC<LanternProps> = ({ wish, onClick }) => {
   
-  // Style mapping for the paper color
-  const colorStyles = {
-    gold: 'from-amber-100 via-amber-400 to-amber-600',
-    red: 'from-red-100 via-red-500 to-red-700',
-    orange: 'from-orange-100 via-orange-400 to-orange-600',
+  // High saturation styles for the "Anime/Festival" look
+  const styles = {
+    gold: {
+      background: 'radial-gradient(circle at 50% 90%, #fffbe7 0%, #fcd34d 30%, #f59e0b 60%, #b45309 90%)',
+      shadow: 'shadow-[0_0_50px_-5px_rgba(251,191,36,0.6)]',
+      textColor: 'text-amber-900/80',
+    },
+    red: {
+      background: 'radial-gradient(circle at 50% 90%, #fff1f2 0%, #fda4af 30%, #f87171 60%, #b91c1c 90%)',
+      shadow: 'shadow-[0_0_50px_-5px_rgba(248,113,113,0.6)]',
+      textColor: 'text-red-950/80',
+    },
+    orange: {
+      background: 'radial-gradient(circle at 50% 90%, #fff7ed 0%, #fdba74 30%, #fb923c 60%, #c2410c 90%)',
+      shadow: 'shadow-[0_0_50px_-5px_rgba(251,146,60,0.6)]',
+      textColor: 'text-orange-950/80',
+    },
   };
 
-  // Glow shadow colors
-  const glowColors = {
-    gold: 'shadow-amber-500/40',
-    red: 'shadow-red-500/40',
-    orange: 'shadow-orange-500/40',
-  };
+  const currentStyle = styles[wish.colorTone];
+  
+  // Truncate text for the lantern body (visual purposes)
+  // We want a vertical column of text, usually 2-5 chars looks best.
+  const displayContent = wish.content.length > 5 ? wish.content.substring(0, 4) + '..' : wish.content;
 
   return (
-    // Layer 1: Positioning and Static Scale
     <div
       className="absolute z-10 select-none"
       style={{
         left: `${wish.x}%`,
-        bottom: '-150px', // Start below the viewport
+        bottom: '-250px', // Start further down
         transform: `scale(${wish.scale})`,
       }}
     >
-      {/* Layer 2: Vertical Floating Animation */}
+      {/* Animation Wrapper: Floating Up */}
       <div
         style={{
           animation: `floatUp ${wish.duration}s linear infinite`,
           animationDelay: `-${wish.delay}s`,
         }}
       >
-        {/* Layer 3: Horizontal Sway Animation */}
+        {/* Animation Wrapper: Swaying */}
         <div
           style={{
-            animation: `sway ${wish.duration * 0.15}s ease-in-out infinite alternate`,
+            animation: `sway ${wish.duration * 0.12}s ease-in-out infinite alternate`,
           }}
         >
-          {/* Interactive Layer */}
+          {/* Interactive Container */}
           <div 
             onClick={() => onClick(wish)}
-            className="group relative cursor-pointer hover:scale-110 transition-transform duration-500"
+            className="group relative cursor-pointer hover:scale-110 transition-transform duration-700 ease-out"
           >
-            {/* Lantern Body */}
-            <div className={`
-              relative w-16 h-24 md:w-20 md:h-28 
-              opacity-95 
-              rounded-t-sm rounded-b-2xl 
-              bg-gradient-to-b ${colorStyles[wish.colorTone]} 
-              shadow-[0_0_35px_10px] ${glowColors[wish.colorTone]}
-              overflow-hidden
-            `}>
+            {/* --- LANTERN BODY --- */}
+            <div 
+              className={`
+                relative w-24 h-36 md:w-28 md:h-40
+                rounded-t-3xl rounded-b-[4rem]
+                ${currentStyle.shadow}
+                overflow-hidden
+                border-[0.5px] border-white/20
+              `}
+              style={{ background: currentStyle.background }}
+            >
+              {/* 1. Paper Texture */}
+              <div className="absolute inset-0 opacity-40 mix-blend-overlay bg-[url('https://www.transparenttextures.com/patterns/rice-paper.png')]"></div>
               
-              {/* Paper Texture Overlay (Subtle) */}
-              <div className="absolute inset-0 bg-[url('https://www.transparenttextures.com/patterns/rice-paper.png')] opacity-30 mix-blend-overlay"></div>
+              {/* 2. Bamboo Structure (Subtler) */}
+              <div className="absolute inset-0 flex justify-between px-6 opacity-10 mix-blend-multiply pointer-events-none">
+                 <div className="w-[1px] h-full bg-black transform -skew-x-6"></div> 
+                 <div className="w-[1px] h-full bg-black transform skew-x-6"></div>
+              </div>
+              <div className="absolute top-[25%] left-0 right-0 h-[1px] bg-black/10 blur-[1px]"></div>
 
-              {/* Inner Light Core (The Fire) */}
+              {/* 3. Calligraphy Text (The Wish) */}
+              <div className={`absolute inset-0 flex items-center justify-center pt-2 pb-8 ${currentStyle.textColor}`}>
+                <div 
+                  className="font-['Ma_Shan_Zheng'] text-3xl md:text-4xl leading-tight opacity-85"
+                  style={{ writingMode: 'vertical-rl', textOrientation: 'upright' }}
+                >
+                  {displayContent}
+                </div>
+              </div>
+
+              {/* 4. Flame Core */}
               <div 
-                className="absolute inset-x-4 bottom-4 h-16 bg-gradient-to-t from-white via-yellow-200 to-transparent blur-md rounded-full mix-blend-screen" 
-                style={{ animation: 'flame 3s infinite ease-in-out alternate' }}
+                className="absolute bottom-6 left-1/2 -translate-x-1/2 w-16 h-16 bg-white rounded-full blur-2xl mix-blend-soft-light opacity-100"
+                style={{ animation: 'flame 4s infinite ease-in-out alternate' }}
               />
-              
-              {/* Structure Lines (Wireframe) */}
-              <div className="absolute inset-0 border-[0.5px] border-white/20 rounded-t-sm rounded-b-2xl" />
-              <div className="absolute top-0 bottom-0 left-1/2 w-[0.5px] bg-black/10" />
-              <div className="absolute bottom-2 left-3 right-3 h-[1px] bg-black/20" /> {/* Bottom rim */}
-              <div className="absolute top-2 left-3 right-3 h-[1px] bg-black/10" /> {/* Top rim */}
-
             </div>
 
-            {/* Hint on hover */}
-            <div className="absolute -bottom-10 left-1/2 -translate-x-1/2 flex flex-col items-center opacity-0 group-hover:opacity-100 transition-opacity duration-300 pointer-events-none z-20">
-               <div className="flex items-center gap-2 text-[10px] text-white/90 bg-black/60 px-3 py-1 rounded-full shadow-lg backdrop-blur-sm border border-white/10 whitespace-nowrap">
-                 <span>{wish.content.substring(0, 12)}{wish.content.length > 12 ? '...' : ''}</span>
+            {/* --- LANTERN BOTTOM RIM & FIRE --- */}
+            {/* The wire ring */}
+            <div className="absolute -bottom-1 left-1/2 -translate-x-1/2 w-12 h-3 bg-amber-900/40 rounded-full blur-[1px] border border-amber-500/30"></div>
+            
+            {/* The Fire Source */}
+            <div className="absolute bottom-1 left-1/2 -translate-x-1/2 w-4 h-4 bg-orange-200 rounded-full blur-[2px] animate-pulse"></div>
+
+
+            {/* --- HOVER TOOLTIP (Keep for full text readability) --- */}
+            <div className="absolute -bottom-14 left-1/2 -translate-x-1/2 flex flex-col items-center opacity-0 group-hover:opacity-100 transition-all duration-500 pointer-events-none z-20 translate-y-4 group-hover:translate-y-0">
+               <div className="flex items-center gap-2 text-[11px] text-amber-100/90 bg-slate-900/90 px-3 py-1.5 rounded-full shadow-xl backdrop-blur-md border border-amber-500/20 whitespace-nowrap">
+                 <span className="font-serif tracking-wide max-w-[150px] truncate">{wish.content}</span>
                  {wish.likes > 0 && (
-                   <span className="flex items-center gap-0.5 border-l border-white/20 pl-2">
+                   <span className="flex items-center gap-1 border-l border-white/10 pl-2 ml-1 text-xs">
                      <HeartIcon className="w-3 h-3 text-red-400" solid />
                      {wish.likes}
                    </span>
                  )}
                </div>
+               {/* Tooltip Triangle */}
+               <div className="w-0 h-0 border-l-[4px] border-l-transparent border-r-[4px] border-r-transparent border-b-[6px] border-b-slate-900/90 rotate-180 -mt-[1px]"></div>
             </div>
+
           </div>
         </div>
       </div>
