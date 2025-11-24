@@ -17,6 +17,8 @@ export const TRANSLATIONS = {
     charCount: "{current}/{max}",
     like: "Like",
     liked: "Liked",
+    share: "Share",
+    copied: "Copied!",
   },
   zh: {
     appTitle: "星愿",
@@ -34,5 +36,7 @@ export const TRANSLATIONS = {
     charCount: "{current}/{max}",
     like: "点赞",
     liked: "已赞",
+    share: "分享",
+    copied: "已复制",
   }
 };

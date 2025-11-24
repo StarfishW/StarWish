@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { Wish, Language } from '../types';
-import { XMarkIcon, SparklesIcon, HeartIcon } from './Icons';
+import { XMarkIcon, SparklesIcon, HeartIcon, ShareIcon } from './Icons';
 import { TRANSLATIONS } from '../constants';
 
 interface WishDetailProps {
@@ -14,12 +14,38 @@ interface WishDetailProps {
 const WishDetail: React.FC<WishDetailProps> = ({ wish, onClose, language, onLike, hasLiked }) => {
   const t = TRANSLATIONS[language];
   const [isAnimatingLike, setIsAnimatingLike] = useState(false);
+  const [isCopied, setIsCopied] = useState(false);
 
   const handleLike = () => {
     if (!hasLiked) {
       setIsAnimatingLike(true);
       onLike(wish);
       setTimeout(() => setIsAnimatingLike(false), 500);
+    }
+  };
+
+  const handleShare = async () => {
+    const shareData = {
+      title: t.appTitle,
+      text: `${wish.content}\n\n${wish.blessing}`,
+      url: window.location.href,
+    };
+
+    if (navigator.share) {
+      try {
+        await navigator.share(shareData);
+      } catch (err) {
+        console.log('Share canceled or failed', err);
+      }
+    } else {
+      // Fallback: copy to clipboard
+      try {
+        await navigator.clipboard.writeText(`${shareData.text}\n\n${shareData.url}`);
+        setIsCopied(true);
+        setTimeout(() => setIsCopied(false), 2000);
+      } catch (err) {
+        console.error('Failed to copy', err);
+      }
     }
   };
 
@@ -61,31 +87,44 @@ const WishDetail: React.FC<WishDetailProps> = ({ wish, onClose, language, onLike
             {wish.blessing}
           </p>
 
-          {/* Like Button */}
-          <button
-            onClick={handleLike}
-            disabled={hasLiked}
-            className={`group relative flex items-center gap-2 px-6 py-2 rounded-full transition-all duration-300 ${
-              hasLiked 
-                ? 'bg-red-500/10 text-red-400 border border-red-500/30 cursor-default' 
-                : 'bg-slate-800 hover:bg-slate-700 text-slate-300 hover:text-red-400 border border-slate-700 hover:border-red-400/50'
-            }`}
-          >
-             <div className={`relative ${isAnimatingLike ? 'animate-bounce' : ''}`}>
-               <HeartIcon className="w-5 h-5" solid={hasLiked} />
-               {isAnimatingLike && (
-                 <div className="absolute inset-0 animate-ping text-red-500 opacity-75">
-                   <HeartIcon className="w-5 h-5" solid />
-                 </div>
-               )}
-             </div>
-             <span className="font-medium font-sans">
-               {hasLiked ? t.liked : t.like}
-             </span>
-             <span className="bg-white/10 px-2 py-0.5 rounded-full text-xs min-w-[1.5rem] ml-1">
-               {wish.likes}
-             </span>
-          </button>
+          <div className="flex items-center gap-4">
+            {/* Like Button */}
+            <button
+              onClick={handleLike}
+              disabled={hasLiked}
+              className={`group relative flex items-center gap-2 px-6 py-2 rounded-full transition-all duration-300 ${
+                hasLiked 
+                  ? 'bg-red-500/10 text-red-400 border border-red-500/30 cursor-default' 
+                  : 'bg-slate-800 hover:bg-slate-700 text-slate-300 hover:text-red-400 border border-slate-700 hover:border-red-400/50'
+              }`}
+            >
+              <div className={`relative ${isAnimatingLike ? 'animate-bounce' : ''}`}>
+                <HeartIcon className="w-5 h-5" solid={hasLiked} />
+                {isAnimatingLike && (
+                  <div className="absolute inset-0 animate-ping text-red-500 opacity-75">
+                    <HeartIcon className="w-5 h-5" solid />
+                  </div>
+                )}
+              </div>
+              <span className="font-medium font-sans">
+                {hasLiked ? t.liked : t.like}
+              </span>
+              <span className="bg-white/10 px-2 py-0.5 rounded-full text-xs min-w-[1.5rem] ml-1">
+                {wish.likes}
+              </span>
+            </button>
+
+            {/* Share Button */}
+            <button
+              onClick={handleShare}
+              className="group relative flex items-center gap-2 px-6 py-2 rounded-full transition-all duration-300 bg-slate-800 hover:bg-slate-700 text-slate-300 hover:text-amber-400 border border-slate-700 hover:border-amber-400/50"
+            >
+              <ShareIcon className="w-5 h-5" />
+              <span className="font-medium font-sans">
+                {isCopied ? t.copied : t.share}
+              </span>
+            </button>
+          </div>
         </div>
 
         <div className="bg-slate-950/50 p-4 text-center">
